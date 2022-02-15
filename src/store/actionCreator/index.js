@@ -41,7 +41,6 @@ export function fetchData () {
             types: pokemonData.types
           }
         }))
-        console.log(results,">>>>>>>>>>masuk");
         dispatch(setData(results))
       } else {
         const data = await response.json()
@@ -86,7 +85,6 @@ export function fetchDataById(id) {
             abilities: formattedAbilities,
             stats
           }
-          console.log(result,"...RESULT DI STORE");
         dispatch(getDataById(result))
       } else {
         const data = await response.json()

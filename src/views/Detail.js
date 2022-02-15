@@ -14,6 +14,24 @@ const dictionary = {
   "speed": "Speed"
 }
 
+const color = {
+  normal: '#A8A77A',
+  fire:  '#EE8130',
+  water:  '#6390F0',
+  electric:  '#F7D02C',
+  grass:  '#7AC74C',
+  fighting:  '#C22E28',
+  poison:  '#A33EA1',
+  flying:  '#A98FF3',
+  psychic:  '#F95587',
+  bug:  '#A6B91A',
+  rock:  '#B6A136',
+  ghost:  '#735797',
+  dragon:  '#6F35FC',
+  dark:  '#705746',
+  steel:  '#B7B7CE',
+  fairy:  '#D685AD'
+}
 
 export const Detail = () => {
   const {id} = useParams()
@@ -36,14 +54,11 @@ export const Detail = () => {
 
   const fetchEvolution =  async (pokemonId) =>  {
     const data = await dispatch(fetchPokemonEvolution(pokemonId))
-    console.log(data,".. data pokemom evo");
     setPokemonEvo(data)
   }
 
   const fetchMoves = async (pokemonId) => {
-    console.log(pokemonId," id to fetch moves");
     const data = await dispatch(fetchPokemonMoves(pokemonId))
-    console.log(data," pokemon moves fetchhchchhchch");
     setPokemonMoves(data)
   }
 
@@ -66,68 +81,96 @@ export const Detail = () => {
     setSelectedTab(newTab)
   }
 
+  const convertNumberFormat = (id) => {
+    if(id.length < 3) {
+      return '#'+ '0'.repeat(3-id.length)+id
+    }
+    
+  }
+
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection: 'column', justifyContent:'center', alignItems: 'center'}}>
       <Link to="/"> 
       <button style={{backgroundColor: 'red', borderRadius: '10px', color: 'white', border:'none', padding: '0.5em', marginTop:'5px', marginLeft:'15px', float: 'left'}}>Home</button>
       </Link>
       {
         pokemon && (
-          <div style={{marginTop: '20px'}}> 
-            <h5 className="card-title">{pokemon?.name}</h5>
-            <div>
-              { id.length == 1? <h5 className="card-title">00{id}</h5> :<h5 className="card-title">0{id}</h5>}
+          <div style={{marginTop: '20px', border:'2px solid #D8D2CB', margin:'2em', padding:'2em', width:'fit-content', borderRadius:'15px'}}> 
+            <div style={{ backgroundColor: color[pokemon.types[0].type.name], padding: '20px 0px', borderRadius: '15px'}}>
+              <div style={{display:'flex', justifyContent: 'space-around', alignItems:'center'}}>
+                <div style={{display:'flex', flexDirection:'column'}}>
+                  <h5 style={{textTransform: 'capitalize'}}>{pokemon?.name}</h5>
+                {
+                  pokemon.types?.map ((element, index) => ((
+                    <p style={{backgroundColor:'white', opacity: 0.5, borderRadius:'15px', fontWeight:'bold'}} key={index}>{element.type.name}</p>
+                  )))
+                }
+                </div>
+                <h5>{convertNumberFormat(id)}</h5>
+              </div>
+              <img src= {pokemon?.imageUrl} /> 
             </div>
-            {
-              pokemon.types?.map ((element, index) => ((
-                <p className="card-text" key={index}>{element.type.name}</p>
-              )))
-            }
-            <img className="img-fluid rounded-start" src= {pokemon?.imageUrl} /> 
             <div style={{display: 'flex', justifyContent:'center'}}>
-              <div style={{margin:'2em', borderBottom: selectedTab['about'] && '5px solid red', padding:'0.25em', cursor:'pointer'}} onClick={()=> changeTab('about')}>About</div>
-              <div style={{margin:'2em', borderBottom: selectedTab['baseStats'] && '5px solid red', padding:'0.25em', cursor:'pointer'}} onClick={()=> changeTab('baseStats')}>Base Stats</div>
-              <div style={{margin:'2em', borderBottom: selectedTab['evolution'] && '5px solid red', padding:'0.25em', cursor:'pointer'}} onClick={()=> changeTab('evolution')}>Evolution</div>
-              <div style={{margin:'2em', borderBottom: selectedTab['moves'] && '5px solid red', padding:'0.25em', cursor:'pointer'}} onClick={()=> changeTab('moves')}>Moves</div>
+              <div style={{margin:'2em', borderBottom: selectedTab['about'] && '5px solid red', padding:'0.25em', cursor:'pointer', fontWeight: 'bold'}} onClick={()=> changeTab('about')}>About</div>
+              <div style={{margin:'2em', borderBottom: selectedTab['baseStats'] && '5px solid red', padding:'0.25em', cursor:'pointer',fontWeight: 'bold'}} onClick={()=> changeTab('baseStats')}>Base Stats</div>
+              <div style={{margin:'2em', borderBottom: selectedTab['evolution'] && '5px solid red', padding:'0.25em', cursor:'pointer' ,fontWeight: 'bold'}} onClick={()=> changeTab('evolution')}>Evolution</div>
+              <div style={{margin:'2em', borderBottom: selectedTab['moves'] && '5px solid red', padding:'0.25em', cursor:'pointer' ,fontWeight: 'bold'}} onClick={()=> changeTab('moves')}>Moves</div>
             </div>
 
             {
               selectedTab['about'] && (
-                <div className="tab-content clearfix" name="About">
-                  <div className="tab-pane active" id="1b">
-                    <h3>Species: {pokemon?.species} </h3>
-                    <h3>Height: {pokemon.height}</h3>
-                    <h3>Weight: {pokemon.weight}</h3>
-                    <h3>Abilities: {pokemon.abilities}</h3>
-                  </div>
+                <div name="About" style={{display:'flex', alignItems:'center', justifyContent: 'center'}}>
+                  <table>
+                    <tr style={{padding: '1px 20px'}}>
+                      <th>Species</th>
+                      <td style={{paddingLeft:'20px'}}>{pokemon.species}</td>
+                    </tr>
+                    <tr style={{padding: '1px 20px'}}>
+                      <th>Height</th>
+                      <td style={{paddingLeft:'20px'}}>{pokemon.height}</td>
+                    </tr>
+                    <tr style={{padding: '1px 20px'}}>
+                      <th>Weight</th>
+                      <td style={{paddingLeft:'20px'}}>{pokemon.weight}</td>
+                    </tr>
+                    <tr style={{padding: '1px 20px'}}>
+                      <th>Abilitites</th>
+                      <td style={{paddingLeft:'20px'}}>{pokemon.abilities}</td>
+                    </tr>
+                  </table>
+                
                 </div>
               )
             }
             {
               selectedTab['baseStats'] && (
                 <div style={{ justifyContent:'center', alignItems:'center', display:'flex', flexDirection: 'column'}}>
-                  {pokemon.stats.map ((el, index) => ((
-                      <div style={{display: 'flex', flexDirection: 'row'}} key={index}>
-                        <h3>{dictionary[el.stat.name]}</h3>
-                        <h3>{el.base_stat}</h3>
-                        <progress value={`${el.base_stat}`} max="100" style={{backgroundColor: el.base_stat < 50 ? "red": "green"}}></progress>
-                      </div>
-                  )))}
+                  <table>
+                    {pokemon.stats.map ((el, index) => ((
+                      <tr key={index}>
+                        <th style={{textAlign:'left', padding:'0 1em'}}>{dictionary[el.stat.name]}</th>
+                        <td style={{textAlign:'center', padding:'0 1em', color: el.base_stat < 50 ? 'red': 'green', fontWeight: 'bold'}}>{el.base_stat}</td>
+                        <td style={{textAlign:'center', padding:'0 1em'}}><progress value={`${el.base_stat}`} max="100" style={{color: Number(el.base_stat) < 50 ? "red": "blue"}}></progress></td>
+                      </tr>
+                    
+                    )))}
+                  </table>
+                
                 </div>
               )
             }
 
             {
               selectedTab['evolution'] && (
-                <div style={{display: 'flex', flexWrap: 'wrap', margin:'auto auto', maxWidth:'700px'}}>
+                <div style={{display: 'flex', flexWrap: 'wrap', margin:'auto auto', maxWidth:'720px'}}>
                   {
                     pokemonEvo?.map(el => (
-                      <div key={el.order} style={{border: '1px solid black', margin:'1em', padding: '0.5em'}}>
+                      <div key={el.order} style={{border: '2px dotted #D8D2CB', borderRadius: '15px', margin:'1em', padding: '0.5em'}}>
                         <div style={{display:'flex', justifyContent: 'space-evenly'}}>
                           <h3>{el.order}</h3>
                           <h3>{el.name}</h3>
                         </div>
-                        <img src={el.imageUrl} alt={el.name}  height="300px" width="300px"/>
+                        <img src={el.imageUrl} alt={el.name}  height="250px" width="300px"/>
                       </div>
                     ))
                   }
@@ -164,7 +207,7 @@ export const Detail = () => {
               )
             }
 
-          </div>
+            </div>
         )
       }
       </div>

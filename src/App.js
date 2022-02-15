@@ -6,7 +6,7 @@ import {Detail} from "./views/Detail.js"
 function App() {
 
   return (
-    <div className="App">
+    <div className="App" >
     <Routes>
       <Route  path="/" element={<Home />} />
       <Route  path="/:id" element={<Detail />} />

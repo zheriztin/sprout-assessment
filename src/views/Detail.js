@@ -69,11 +69,11 @@ export const Detail = () => {
   return (
     <div>
       <Link to="/"> 
-      <button style={{backgroundColor: 'red', borderRadius: '10px', color: 'white', border:'none', padding: '0.5em'}}>Home</button>
+      <button style={{backgroundColor: 'red', borderRadius: '10px', color: 'white', border:'none', padding: '0.5em', marginTop:'5px', marginLeft:'15px', float: 'left'}}>Home</button>
       </Link>
       {
         pokemon && (
-          <div>
+          <div style={{marginTop: '20px'}}> 
             <h5 className="card-title">{pokemon?.name}</h5>
             <div>
               { id.length == 1? <h5 className="card-title">00{id}</h5> :<h5 className="card-title">0{id}</h5>}

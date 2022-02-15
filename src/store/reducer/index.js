@@ -3,7 +3,7 @@ import {SET_DATA, GET_DATA_BY_ID, SET_ERROR} from "../actionType"
 
 const initialState = {
   data: [],
-  dataById: [],
+  dataById: null,
   error: null,
 }
 

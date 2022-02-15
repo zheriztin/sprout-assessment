@@ -41,6 +41,7 @@ export function fetchData () {
             types: pokemonData.types
           }
         }))
+        console.log(results,">>>>>>>>>>masuk");
         dispatch(setData(results))
       } else {
         const data = await response.json()
@@ -73,8 +74,6 @@ export function fetchDataById(id) {
             const rest = el.ability.name.slice(1)
             return first + rest
           }).join(', ')
-          const status = {}
-      
 
           const  result  = {
             name,
@@ -84,8 +83,10 @@ export function fetchDataById(id) {
             height,
             weight,
             species: selectedGenera.genus.replace('Pokémon',""),
-            abilities: formattedAbilities
+            abilities: formattedAbilities,
+            stats
           }
+          console.log(result,"...RESULT DI STORE");
         dispatch(getDataById(result))
       } else {
         const data = await response.json()
@@ -93,6 +94,81 @@ export function fetchDataById(id) {
       }
     } catch (err) {
       dispatch(setError(err))
+    }
+  }
+}
+
+export function fetchPokemonEvolution(id) {
+  return async (dispatch) => {
+    try {
+      const speciesResponse = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`)
+      const speciesData = await speciesResponse.json()
+      const {evolution_chain: {url}, evolves_from_species} = speciesData
+
+      const evoChainRes = await fetch(url)
+      const {chain} = await evoChainRes.json()
+
+      const formattedEvo = {
+        1: chain.species.name
+      }
+
+      const hasEvo = chain.evolves_to.length
+      let isLast = false
+      let order = 2
+      if (hasEvo) {
+        let level = chain.evolves_to[0]
+        while (!isLast) {
+          formattedEvo[order] = level.species.name
+          if (level.evolves_to.length) {
+            level = level.evolves_to[0]
+            order++
+          } else {
+            isLast = true
+          }
+        }
+      }
+
+      const result = await Promise.all(Object.entries(formattedEvo).map(async([key,value]) => {
+        const pokemonRes = await fetch (baseUrl + value)
+        const pokemonData = await pokemonRes.json()
+        const { sprites:{other:{home: {front_default}}}} =  pokemonData
+        return {
+          order: key,
+          name: value,
+          imageUrl: front_default
+        }
+      }))
+      return result
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export function fetchPokemonMoves(id) {
+  return async () => {
+    try {
+      const pokemonRes = await fetch(baseUrl + id)
+      const pokemonData = await pokemonRes.json()
+      const {moves} = pokemonData 
+
+      const result = await Promise.all(moves.map(async el => {
+        const {move: {name, url}} = el
+        const moveRes = await fetch(url)
+        const moveDetail = await moveRes.json()
+        const {accuracy,power,pp} = moveDetail
+
+        return {
+          name: name.split('-').join(' '),
+          accuracy,
+          power,
+          pp
+        }
+      }))
+      return result
+      
+    } catch (error) {
+      console.log(error);
     }
   }
 }
